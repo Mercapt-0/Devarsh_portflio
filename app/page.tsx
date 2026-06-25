@@ -173,7 +173,7 @@ export default function Home() {
                 GitHub
               </a>
               <a
-                href="https://linkedin.com/in/devarsh-soni"
+                href="https://www.linkedin.com/in/devarsh-soni-16n31/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm transition-all hover:border-purple-500/30 hover:bg-purple-500/10"
@@ -609,7 +609,7 @@ export default function Home() {
                 <span>(682) 564-5690</span>
               </a>
               <a
-                href="https://linkedin.com/in/devarsh-soni"
+                href="https://www.linkedin.com/in/devarsh-soni-16n31/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm transition-all hover:border-purple-500/30 hover:bg-purple-500/10"
