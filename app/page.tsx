@@ -118,7 +118,7 @@ const projects = [
     label: "Project",
     icon: Cpu,
     title: "Edge LLM: On-Device Language Model Inference",
-    github: "https://github.com/Mercapt-0/Edge-LLM",
+    github: "https://github.com/Mercapt-0/Edge_LLM",
     color: "emerald",
     techs: ["Python", "ONNX Runtime", "TensorRT", "Quantization", "Hugging Face"],
     bullets: [
@@ -678,7 +678,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-white/5 py-6 text-center text-xs text-gray-600">
-        <p>&copy; {new Date().getFullYear()} Devarsh Soni. Built with Next.js &amp; Framer Motion.</p>
+        <p>&copy; {new Date().getFullYear()} Devarsh Soni.</p>
       </footer>
     </main>
   );
