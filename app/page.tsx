@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import {
   MapPin,
@@ -96,6 +97,155 @@ function NavLink({ href, label }: { href: string; label: string }) {
     >
       {label}
     </a>
+  );
+}
+
+const projects = [
+  {
+    label: "Featured Project",
+    icon: Eye,
+    title: "Vision-CBF: Semantic Segmentation for Autonomous Vehicles",
+    github: "https://github.com/Mercapt-0/vision-cbf-safe-nav",
+    color: "purple",
+    techs: ["PyTorch", "DeepLabV3+", "CARLA", "OpenCV", "NVIDIA A100"],
+    bullets: [
+      <>Fine-tuned DeepLabV3+ on 15K+ CARLA images achieving <span className="font-semibold text-white">96.1% pixel accuracy</span> and <span className="font-semibold text-white">73.9% mIoU</span></>,
+      <>Integrated into depth-fused safety pipeline achieving <span className="font-semibold text-white">98.75% free-space IoU</span> for collision avoidance</>,
+      <>Designed two-phase training with discriminative learning rates and Dice + Cross-Entropy loss for class imbalance</>,
+    ],
+  },
+  {
+    label: "Project",
+    icon: Cpu,
+    title: "Edge LLM: On-Device Language Model Inference",
+    github: "https://github.com/Mercapt-0/Edge-LLM",
+    color: "emerald",
+    techs: ["Python", "ONNX Runtime", "TensorRT", "Quantization", "Hugging Face"],
+    bullets: [
+      <>Optimized LLM inference for edge devices using <span className="font-semibold text-white">4-bit quantization</span> and <span className="font-semibold text-white">KV-cache optimization</span>, reducing memory footprint by 75%</>,
+      <>Built a lightweight serving pipeline with <span className="font-semibold text-white">ONNX Runtime</span> and TensorRT achieving <span className="font-semibold text-white">3x faster</span> token generation vs. baseline on resource-constrained hardware</>,
+      <>Implemented speculative decoding and dynamic batching to enable real-time conversational AI on devices with under 8GB RAM</>,
+    ],
+  },
+  {
+    label: "Project",
+    icon: Database,
+    title: "Optics Retail Enterprise Database",
+    github: "https://github.com/Mercapt-0/Optics-Retail-DBMS",
+    color: "blue",
+    techs: ["Oracle SQL", "PL/SQL", "EER Modeling", "Triggers", "Window Functions"],
+    bullets: [
+      <>Architected <span className="text-gray-200">BCNF-normalized schema with 15+ entities</span> for end-to-end retail operations with referential integrity</>,
+      <>Built analytical SQL with complex JOINs, Window Functions, CUBE/ROLLUP aggregations for real-time inventory &amp; sales reports</>,
+    ],
+  },
+];
+
+function ProjectCarousel() {
+  const [current, setCurrent] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  const next = useCallback(() => {
+    setCurrent((prev) => (prev + 1) % projects.length);
+  }, []);
+
+  const prev = useCallback(() => {
+    setCurrent((prev) => (prev - 1 + projects.length) % projects.length);
+  }, []);
+
+  useEffect(() => {
+    if (paused) return;
+    const timer = setInterval(next, 5000);
+    return () => clearInterval(timer);
+  }, [paused, next]);
+
+  const p = projects[current];
+  const colorMap: Record<string, { tag: string; chevron: string; dot: string }> = {
+    purple: { tag: "bg-purple-500/10 text-purple-300", chevron: "text-purple-400", dot: "bg-purple-500" },
+    blue: { tag: "bg-blue-500/10 text-blue-300", chevron: "text-blue-400", dot: "bg-blue-500" },
+    emerald: { tag: "bg-emerald-500/10 text-emerald-300", chevron: "text-emerald-400", dot: "bg-emerald-500" },
+  };
+  const colors = colorMap[p.color] || colorMap.purple;
+
+  return (
+    <motion.div
+      variants={cardVariants}
+      id="projects"
+      className="glass group relative overflow-hidden rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/5 md:col-span-2 lg:col-span-4"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div className="scroll-mt-24">
+        <div className="mb-4 flex items-center justify-between">
+          <SectionLabel icon={p.icon} label={p.label} />
+          <div className="flex items-center gap-3">
+            <div className="flex gap-2">
+              {projects.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrent(i)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    i === current ? `w-6 ${colors.dot}` : "w-2 bg-white/20 hover:bg-white/40"
+                  }`}
+                />
+              ))}
+            </div>
+            <div className="flex gap-1">
+              <button
+                onClick={prev}
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white"
+              >
+                <ChevronRight className="h-4 w-4 rotate-180" />
+              </button>
+              <button
+                onClick={next}
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={current}
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -40 }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+          >
+            <div className="mb-2 flex items-start justify-between">
+              <h3 className="text-lg font-semibold text-white">{p.title}</h3>
+              <a
+                href={p.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-shrink-0 items-center gap-1 text-sm text-purple-400 transition-colors hover:text-purple-300"
+              >
+                <Github className="h-4 w-4" />
+                <ArrowUpRight className="h-3 w-3" />
+              </a>
+            </div>
+            <div className="mb-4 flex flex-wrap gap-2">
+              {p.techs.map((t) => (
+                <span key={t} className={`rounded-md px-2 py-0.5 text-xs ${colors.tag}`}>
+                  {t}
+                </span>
+              ))}
+            </div>
+            <ul className="space-y-2 text-sm text-gray-400">
+              {p.bullets.map((bullet, i) => (
+                <li key={i} className="flex gap-2">
+                  <ChevronRight className={`mt-0.5 h-4 w-4 flex-shrink-0 ${colors.chevron}`} />
+                  <span>{bullet}</span>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </motion.div>
   );
 }
 
@@ -474,114 +624,9 @@ export default function Home() {
           </a>
         </GlassCard>
 
-        {/* ===== ROW 6: PROJECTS ===== */}
+        {/* ===== ROW 6: PROJECTS CAROUSEL ===== */}
 
-        {/* Project 1 - Vision-CBF */}
-        <GlassCard className="md:col-span-2" id="projects">
-          <div className="scroll-mt-24">
-            <SectionLabel icon={Eye} label="Featured Project" />
-            <div className="mb-2 flex items-start justify-between">
-              <h3 className="text-lg font-semibold text-white">
-                Vision-CBF: Semantic Segmentation for Autonomous Vehicles
-              </h3>
-              <a
-                href="https://github.com/Mercapt-0/vision-cbf-safe-nav"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-sm text-purple-400 transition-colors hover:text-purple-300"
-              >
-                <Github className="h-4 w-4" />
-                <ArrowUpRight className="h-3 w-3" />
-              </a>
-            </div>
-            <div className="mb-4 flex flex-wrap gap-2">
-              {["PyTorch", "DeepLabV3+", "CARLA", "OpenCV", "NVIDIA A100"].map(
-                (t) => (
-                  <span
-                    key={t}
-                    className="rounded-md bg-purple-500/10 px-2 py-0.5 text-xs text-purple-300"
-                  >
-                    {t}
-                  </span>
-                )
-              )}
-            </div>
-            <ul className="space-y-2 text-sm text-gray-400">
-              <li className="flex gap-2">
-                <ChevronRight className="mt-0.5 h-4 w-4 flex-shrink-0 text-purple-400" />
-                <span>
-                  Fine-tuned DeepLabV3+ on 15K+ CARLA images achieving{" "}
-                  <span className="font-semibold text-white">96.1% pixel accuracy</span>{" "}
-                  and <span className="font-semibold text-white">73.9% mIoU</span>
-                </span>
-              </li>
-              <li className="flex gap-2">
-                <ChevronRight className="mt-0.5 h-4 w-4 flex-shrink-0 text-purple-400" />
-                <span>
-                  Integrated into depth-fused safety pipeline achieving{" "}
-                  <span className="font-semibold text-white">98.75% free-space IoU</span>{" "}
-                  for collision avoidance
-                </span>
-              </li>
-              <li className="flex gap-2">
-                <ChevronRight className="mt-0.5 h-4 w-4 flex-shrink-0 text-purple-400" />
-                <span>
-                  Designed two-phase training with discriminative learning rates
-                  and Dice + Cross-Entropy loss for class imbalance
-                </span>
-              </li>
-            </ul>
-          </div>
-        </GlassCard>
-
-        {/* Project 2 - Optics Retail */}
-        <GlassCard className="md:col-span-2">
-          <SectionLabel icon={Database} label="Project" />
-          <div className="mb-2 flex items-start justify-between">
-            <h3 className="text-lg font-semibold text-white">
-              Optics Retail Enterprise Database
-            </h3>
-            <a
-              href="https://github.com/Mercapt-0/Optics-Retail-DBMS"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 text-sm text-purple-400 transition-colors hover:text-purple-300"
-            >
-              <Github className="h-4 w-4" />
-              <ArrowUpRight className="h-3 w-3" />
-            </a>
-          </div>
-          <div className="mb-4 flex flex-wrap gap-2">
-            {["Oracle SQL", "PL/SQL", "EER Modeling", "Triggers", "Window Functions"].map(
-              (t) => (
-                <span
-                  key={t}
-                  className="rounded-md bg-blue-500/10 px-2 py-0.5 text-xs text-blue-300"
-                >
-                  {t}
-                </span>
-              )
-            )}
-          </div>
-          <ul className="space-y-2 text-sm text-gray-400">
-            <li className="flex gap-2">
-              <ChevronRight className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-400" />
-              <span>
-                Architected{" "}
-                <span className="text-gray-200">BCNF-normalized schema with 15+ entities</span>{" "}
-                for end-to-end retail operations with referential integrity
-              </span>
-            </li>
-            <li className="flex gap-2">
-              <ChevronRight className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-400" />
-              <span>
-                Built analytical SQL with complex JOINs, Window Functions,
-                CUBE/ROLLUP aggregations for real-time inventory &amp; sales
-                reports
-              </span>
-            </li>
-          </ul>
-        </GlassCard>
+        <ProjectCarousel />
 
         {/* ===== ROW 7: CONTACT ===== */}
 
